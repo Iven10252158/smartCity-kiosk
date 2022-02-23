@@ -1,5 +1,6 @@
 import { createStore } from 'vuex'
-
+import storesData from './storesData'
+import ws from './ws'
 export default createStore({
   state: {
   },
@@ -7,6 +8,9 @@ export default createStore({
   },
   actions: {
   },
+  getters: {},
   modules: {
+    storesData,
+    ws
   }
 })
