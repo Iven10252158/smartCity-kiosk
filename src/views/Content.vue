@@ -63,46 +63,55 @@ export default {
   methods: {
     goTo_Kaohsiung (district) {
       this.$store.dispatch('storesData/getDistrict', district)
+      console.warn('goTo_Kaohsiung', district)
       this.types.forEach(item => {
         if (item === district) {
           this.$router.push({ path: '/content/merchants', query: { uuid: this.$route.query.uuid, district: item } })
           this.isKaohsiung = true
           this.isTaipei = false
           this.isOMO = false
+          // this.$store.dispatch('storesData/getDistrict', district)
+        }
+      })
+    },
+    goTo_OMO (district) {
+      this.$store.dispatch('storesData/getDistrict', district)
+      this.types.forEach(item => {
+        if (item === district) {
+          this.$router.push({ path: '/content/merchants', query: { uuid: this.$route.query.uuid, district: item } })
+          this.isKaohsiung = false
+          this.isTaipei = false
+          this.isOMO = true
           this.$store.dispatch('storesData/getDistrict', district)
         }
       })
     },
-    goTo_OMO (item) {
-      console.log(item)
-      this.isKaohsiung = false
-      this.isTaipei = false
-      this.isOMO = true
-      this.$router.push({ path: '/content/merchants', query: { district: item } })
-      this.$store.dispatch('storesData/getDistrict', item)
-    },
-    goTo_Taipei (item) {
-      console.log(item)
-      this.isKaohsiung = false
-      this.isOMO = false
-      this.isTaipei = true
-      this.$router.push({ path: '/content/merchants', query: { district: item } })
-      this.$store.dispatch('storesData/getDistrict', item)
+    goTo_Taipei (district) {
+      this.$store.dispatch('storesData/getDistrict', district)
+      this.types.forEach(item => {
+        if (item === district) {
+          this.$router.push({ path: '/content/merchants', query: { uuid: this.$route.query.uuid, district: item } })
+          this.isKaohsiung = false
+          this.isOMO = false
+          this.isTaipei = true
+          this.$store.dispatch('storesData/getDistrict', item)
+        }
+      })
     },
     getPageID () {
       this.$http.get('http://20.106.156.149:8080/template/c5898923-dee3-459f-9a36-0ef06c268903')
         .then(res => {
-          console.log(res)
           connectSocket(res.data.uuid)
-          // this.goTo_OMO('OMO')
+          this.goTo_Kaohsiung('高雄展區')
         })
     }
   },
   mounted () {
     this.$store.dispatch('storesData/getCategories').then(res => {
+      console.log(res)
       this.types = res.type
+      this.getPageID()
     })
-    this.getPageID()
   }
 }
 </script>
