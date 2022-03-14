@@ -47,21 +47,23 @@ export default {
     getCategories () {
       this.$store.dispatch('storesData/getCategories')
     },
-    totalCategories (item) {
+    totalCategories (item, page = 1) {
       // console.warn('totalMerchants')
       this.$store.dispatch('storesData/getValue', item)
+      this.$store.dispatch('storesData/getAllShops', { district: this.TypeValue, category: '', page: page })
       this.merchantsValue = 'total'
-      if (item === undefined) {
-        this.$router.push({ path: '/content/merchants', query: { uuid: this.$route.query.uuid, category: 'total' } })
-        this.$store.dispatch('storesData/getCategories')
+      if (!item) {
+        console.log('!item')
+        this.$router.push({ path: '/content/merchants', query: { uuid: this.$route.query.uuid, district: this.TypeValue, category: 'total' } })
+        // this.$store.dispatch('storesData/getAllShops')
       }
     },
-    chooseCategory (category) {
-      console.log(category)
-      this.$store.dispatch('storesData/getValue', category)
-      this.$store.dispatch('storesData/getCategoryShop', category)
+    chooseCategory (item, page = 1) {
+      console.log(item)
+      this.$store.dispatch('storesData/getValue', item)
+      this.$store.dispatch('storesData/getAllShops', { district: this.TypeValue, category: item, page: page })
       this.merchantsValue = this.getMerchantValue
-      this.$router.push({ path: '/content/merchants', query: { uuid: this.$route.query.uuid, category: `${category}` } })
+      this.$router.push({ path: '/content/merchants', query: { uuid: this.$route.query.uuid, district: this.TypeValue, category: `${item}` } })
       // this.$store.dispatch('storesData/districtType', category)
     }
   },

@@ -16,7 +16,7 @@
     </div>
   </div>
   <div class="btn-group d-flex">
-    <div v-if="$store.state.storesData.isShow" class="bg-color d-flex align-items-center" @click="arrowBtn">
+    <div v-if="isShow" class="bg-color d-flex align-items-center" @click="arrowBtn">
       <div class="arrowBtn mx-auto d-flex justify-content-center align-items-center">
         <a href="#" class="text-decoration-none text-white">
           <i class="fas fa-chevron-left"></i>
@@ -36,11 +36,12 @@ import { connectSocket } from '@/webSocket/websocket'
 export default {
   data () {
     return {
+      isShow: false,
       isKaohsiung: false,
       isOMO: false,
       isTaipei: false,
       showImage: false,
-      type: [],
+      types: [],
       typeValue: ''
     }
   },
@@ -58,60 +59,76 @@ export default {
     },
     video () {
       return this.$store.getters['ws/video']
+    },
+    categories () {
+      return this.$store.getters['storesData/categories']
     }
   },
   methods: {
-    goTo_Kaohsiung (district) {
-      this.$store.dispatch('storesData/getDistrict', district)
+    goTo_Kaohsiung (district, page = 1) {
       console.warn('goTo_Kaohsiung', district)
+      this.$store.dispatch('storesData/getDistrict', district)
       this.types.forEach(item => {
         if (item === district) {
-          this.$router.push({ path: '/content/merchants', query: { uuid: this.$route.query.uuid, district: item } })
+          this.$router.push({ path: '/content/merchants', query: { uuid: this.$route.query.uuid, district: item, category: 'total' } })
+          this.$store.dispatch('storesData/getAllShops', { district: district, category: '', page: page })
           this.isKaohsiung = true
           this.isTaipei = false
           this.isOMO = false
-          // this.$store.dispatch('storesData/getDistrict', district)
         }
       })
     },
-    goTo_OMO (district) {
+    goTo_OMO (district, page = 1) {
       this.$store.dispatch('storesData/getDistrict', district)
       this.types.forEach(item => {
         if (item === district) {
-          this.$router.push({ path: '/content/merchants', query: { uuid: this.$route.query.uuid, district: item } })
+          this.$router.push({ path: '/content/merchants', query: { uuid: this.$route.query.uuid, district: item, category: 'total' } })
+          this.$store.dispatch('storesData/getAllShops', { district: district, category: '', page: page })
           this.isKaohsiung = false
           this.isTaipei = false
           this.isOMO = true
-          this.$store.dispatch('storesData/getDistrict', district)
         }
       })
     },
-    goTo_Taipei (district) {
+    goTo_Taipei (district, page = 1) {
       this.$store.dispatch('storesData/getDistrict', district)
       this.types.forEach(item => {
         if (item === district) {
-          this.$router.push({ path: '/content/merchants', query: { uuid: this.$route.query.uuid, district: item } })
+          this.$router.push({ path: '/content/merchants', query: { uuid: this.$route.query.uuid, district: item, category: 'total' } })
+          this.$store.dispatch('storesData/getAllShops', { district: district, category: '', page: page })
           this.isKaohsiung = false
           this.isOMO = false
           this.isTaipei = true
-          this.$store.dispatch('storesData/getDistrict', item)
         }
       })
     },
     getPageID () {
-      this.$http.get('http://20.106.156.149:8080/template/c5898923-dee3-459f-9a36-0ef06c268903')
+      this.$http.get(`${process.env.VUE_APP_URL}/template/${process.env.VUE_APP_UUID}`)
         .then(res => {
+          // console.log(res)
           connectSocket(res.data.uuid)
-          this.goTo_Kaohsiung('高雄展區')
+          this.$store.dispatch('storesData/getCategories').then(res => {
+            console.log(res)
+            this.types = res.type
+            this.goTo_Kaohsiung('高雄展區')
+          })
         })
+    },
+    arrowBtn () {
+      if (this.$route.path === '/content/merchantDetail') {
+        this.isShow = true
+      } else {
+        console.log(this.$route)
+      }
     }
   },
   mounted () {
-    this.$store.dispatch('storesData/getCategories').then(res => {
-      console.log(res)
-      this.types = res.type
-      this.getPageID()
-    })
+    this.getPageID()
+    // this.$store.dispatch('storesData/getCategories').then(res => {
+    //   console.log(res)
+    //   this.types = res.type
+    //   this.getPageID()
+    // })
   }
 }
 </script>

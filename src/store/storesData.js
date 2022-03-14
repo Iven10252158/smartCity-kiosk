@@ -6,12 +6,15 @@ const state = {
   types: [],
   typeValue: '',
   stores: [],
+  pagination: [],
   isShow: false
 }
 
 const mutations = {
   getAllShops (state, payload) {
-    state.stores = payload
+    state.pagination = payload.slice(0, 1)
+    state.stores = payload.slice(1)
+    console.log('payload', state.pagination)
   },
   getCategoryShop (state, payload) {
     console.log(payload)
@@ -23,6 +26,7 @@ const mutations = {
   },
   getTypeValue (state, district) {
     state.typeValue = district
+    console.log(state.typeValue)
   },
   controlArrowBtn (state) {
     state.isShow = !state.isShow
@@ -35,30 +39,34 @@ const mutations = {
 }
 
 const actions = {
-  getAllShops ({ commit }, page) {
-    console.log(page)
-    return axios.get('http://20.106.156.149:8080/smartcity/?type=%E9%AB%98%E9%9B%84%E5%B1%95%E5%8D%80&offset=10&page=1')
-      .then(res => {
+  async getAllShops ({ commit }, data) {
+    console.log('data', data)
+    try {
+      if (data.district && data.category) {
+        const res = await axios.get(`${process.env.VUE_APP_URL}/smartcity/?type=${data.district}&region=${data.category}&offset=12&page=${data.page}`)
+        console.log('try1', res)
         commit('getAllShops', res.data)
         return res.data
-      })
-  },
-  getCategoryShop ({ commit }, region, page) {
-    return axios.get('http://20.106.156.149:8080/smartcity/?type=%E9%AB%98%E9%9B%84%E5%B1%95%E5%8D%80&region=%E7%89%A9%E8%81%AF%E7%B6%B2%E6%87%89%E7%94%A8%285G%2CAIoT%29&offset=10&page=2')
-      .then(res => {
-        console.log('getCategoryShop', res, region)
-        commit('getCategoryShop', res.data)
+      } else {
+        const res = await axios.get(`${process.env.VUE_APP_URL}/smartcity/?type=${data.district}&offset=12&page=${data.page}`)
+        console.log('try2', data, res)
+        commit('getAllShops', res.data)
         return res.data
-      })
+      }
+    } catch (error) {
+      console.log('catch', error)
+    }
   },
   getCategories ({ commit }) {
-    return axios.get('http://20.106.156.149:8080/smartcity/items')
+    return axios.get(`${process.env.VUE_APP_URL}/smartcity/items`)
       .then(res => {
+        console.log('getCategories', res)
         commit('getCategories', res.data)
         return res.data
       })
   },
   getDistrict ({ commit }, district) {
+    console.log(district)
     commit('getTypeValue', district)
   },
   getValue ({ commit }, category) {
@@ -79,7 +87,9 @@ const getters = {
   merchantValue (state) {
     return state.merchantValue
   },
-
+  pagination (state) {
+    return state.pagination
+  },
   typeValue (state) {
     return state.typeValue
   },

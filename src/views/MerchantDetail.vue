@@ -4,21 +4,24 @@
             <div class="merchantDetail-left">
               <SideMenu />
             </div>
-            <div class="merchantDetail-right bg-dark text-white">
+            <div class="merchantDetail-right bg-info text-white">
                 <div class="container">
                   <div class="shop-information mt-5" v-for="store in showDetail" :key="store.uuid">
                     <p>店家名稱： {{ store.name }} </p>
                     <p>店家電話： {{ store.telephone }} </p>
                     <p>店家地址： {{ store.address }} </p>
-                    <img class="qr-code my-3" :src="store.qrcode" alt="">
-                    <router-link class="oexpo-btn btn rounded-pill text-dark my-3 d-block"
-                    :to="{path : '/content/merchantOxpeo' ,
+                    <img class="qr-code my-3"  v-if="store.qrcode" :src="store.qrcode" alt="">
+                    <!-- <router-link :id="store.name" v-if="store.qrcode" class="oexpo-btn btn rounded-pill text-dark my-3 d-block"
+                    :to="{path : '/content/merchantOexpo' ,
                       query: {
                       uuid: `${$route.query.uuid}`,
                       merchantsUUID: `${store.uuid}`
                       }}">
                       進入店家攤位
-                  </router-link>
+                  </router-link> -->
+                  <div v-if="!store.qrcode" class="text-white increase">
+                    目前尚無新增店家攤位哦!
+                  </div>
                   </div>
                 </div>
             </div>
@@ -54,6 +57,7 @@ export default {
     }
   },
   mounted () {
+    console.log(this.$route)
     this.stores = this.$store.getters['storesData/storesData']
   }
 }
@@ -61,22 +65,17 @@ export default {
 
 <style lang="scss" scoped>
 .merchantDetail-wrap{
-    display: flex;
-    flex-basis: 71.6vh;
-    position: relative;
+    height: 62.5vh;
+    // position: relative;
 }
 .merchantDetail-content{
-    background-color: #213341;
-    flex: 1;
 
     .merchantDetail-left{
-        background-color:  #3E708B;
-        height: 71.6vh;
         position: absolute;
         top: 0;
         bottom: 0;
         left: 0;
-        width: 30%;
+        // width: 100%;
     }
 
     .merchantDetail-right{
@@ -84,7 +83,7 @@ export default {
         top: 0;
         bottom: 0;
         right: 0;
-        width: 70%;
+        width: 76.4%;
         .shop-information{
           font-size: 48px;
         }

@@ -31,7 +31,7 @@ const mutations = {
       switch (payload.type) {
         case 'newsticker' :
           state.newSticker = payload.content
-          console.log('else newsticker', state.newSticker)
+          // console.log('else newsticker', state.newSticker)
           break
         case 'image' :
           state.image = payload.content
