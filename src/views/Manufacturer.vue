@@ -5,7 +5,7 @@
         <div class="container">
             <div class="bottom-content-top">
                 <div class="pagination-bar bg-dark container">
-                    <nav class="mt-4">
+                    <nav>
                         <ul class="pagination pagination-num d-flex justify-content-between">
                           <template v-for="page in paginations" :key="page.offset">
                             <li id="page-prev-function" class="page-item w-25 text-center pointer"
@@ -36,14 +36,10 @@
                 </div>
             </div>
             <div class="container px-3">
-                <div class="row g-3 mt-5">
+                <div class="row g-3 mt-3">
                     <div class="col-sm-4 mt-0 d-flex justify-content-center" v-for="store in stores" :key="store.uuid">
-                    <router-link :to="{ path: '/content/merchantDetail', query: {
-                        uuid: `${$route.query.uuid}`,
-                        district: `${store.region}`,
-                        merchantsUUID: `${store.uuid}`
-                        }}"
-                    class="store-btn text-center w-100 my-2 py-4 px-4 rounded-0 border-0 text-decoration-none">{{ store.name }}</router-link>
+                    <button @click="openInformation(store)"
+                    class="manufacturer-btn manufacturer-name-btn text-center w-100 my-2 py-4 px-4 rounded-0 border-0 text-decoration-none">{{ store.name }}</button>
                     </div>
                 </div>
             </div>
@@ -78,6 +74,9 @@ export default {
     },
     paginations () {
       return this.$store.getters['storesData/pagination']
+    },
+    page () {
+      return this.$store.getters['storesData/page']
     }
   },
   watch: {
@@ -86,6 +85,17 @@ export default {
     }
   },
   methods: {
+    openInformation (store) {
+      this.$store.dispatch('showBtn', true)
+      this.$router.push({
+        path: '/content/manufacturerDetail',
+        query: {
+          uuid: `${this.$route.query.uuid}`,
+          district: `${store.region}`,
+          merchantsUUID: `${store.uuid}`
+        }
+      })
+    },
     getAllShops (item, page = 1) {
       if (this.$route.query.category === 'total') {
         this.$store.dispatch('storesData/getAllShops', { district: this.TypeValue, category: '', page: page })
@@ -111,7 +121,12 @@ export default {
     }
   },
   mounted () {
-    this.getAllShops()
+    // this.getAllShops()
+    this.$store.dispatch('showBtn', true)
+    if (this.$route.query.district === this.TypeValue && this.$route.query.category === 'total' && this.page === 1) {
+      // this.$store.dispatch('storesData/filterType', '')
+      this.$store.dispatch('storesData/getAllShops', { district: this.TypeValue, category: '', page: 1 })
+    }
   }
 }
 </script>
@@ -146,12 +161,12 @@ export default {
   }
 }
 
-  .store-btn{
+  .manufacturer-btn{
     background-color: #016A72;
     color: #D6FBFF;
     font-size: 56px;
     @media(max-width:1080px) {
-      font-size: 32px;
+      font-size: 28px;
     }
   }
 }

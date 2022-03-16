@@ -13,14 +13,19 @@ const routes = [
     component: () => import('@/views/Content.vue'),
     children: [
       {
-        path: 'merchants',
-        name: 'Merchants',
-        component: () => import('@/views/Merchants.vue')
+        path: 'manufacturer',
+        name: 'manufacturer',
+        component: () => import('@/views/Manufacturer.vue')
       },
       {
-        path: 'merchantDetail',
-        name: 'merchantDetail',
-        component: () => import('@/views/MerchantDetail.vue')
+        path: 'manufacturerDetail',
+        name: 'manufacturerDetail',
+        component: () => import('@/views/ManufacturerDetail.vue')
+      },
+      {
+        path: 'manufacturerOexpo',
+        name: 'manufacturerOexpo',
+        component: () => import('@/views/ManufacturerOexpo.vue')
       }
     ]
   }

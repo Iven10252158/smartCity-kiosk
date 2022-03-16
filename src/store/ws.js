@@ -16,29 +16,39 @@ const mutations = {
         switch (item.type) {
           case 'newsticker' :
             state.newSticker = item.content
-            // console.log('newsticker', state.newSticker, item.listID)
             break
           case 'image' :
             state.image = item.content
-            // console.log('image', state.image)
             break
           case 'video':
-            state.video.src = `https://www.youtube.com/embed/${item.content}?wmode=opaque&autohide=1&autoplay=1&mute=1&loop=1&playlist=${item.content}`
+            item.content.replace('\n', '')
+            state.video.src = item.content.replace('\n', '')
             break
+          case 'stream' :
+            item.content.replace('\n', '')
+            state.video.src = item.content.replace('\n', '')
         }
       })
     } else {
       switch (payload.type) {
         case 'newsticker' :
           state.newSticker = payload.content
-          // console.log('else newsticker', state.newSticker)
           break
         case 'image' :
           state.image = payload.content
+          state.video.src = ''
           break
         case 'video':
-          state.video.src = `https://www.youtube.com/embed/${payload.content}?wmode=opaque&autohide=1&autoplay=1&mute=1&loop=1&playlist=${payload.content}`
+          payload.content.replace('\n', '')
+          state.video.src = payload.content.replace('\n', '')
+          state.image = ''
+          console.log('video', state.video.src)
           break
+        case 'stream' :
+          payload.content.replace('\n', '')
+          state.video.src = payload.content.replace('\n', '')
+          state.image = ''
+          console.log('stream', state.video.src)
       }
     }
   }

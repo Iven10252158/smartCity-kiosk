@@ -2,55 +2,80 @@
 <div class="wrap">
   <div class="top">
     <div class="media-block">
+    <div class="muteBtn pointer" @click="mute"></div>
+        <img v-show="isLoading" class="loading" src="~@/assets/load.gif" alt="">
       <div class="video-part">
         <div v-show="showImage" class="media bg-cover" :style="{backgroundImage:'url(' +image+ ')'}"></div>
         <div v-show="!showImage" class="media">
-          <iframe class="media liveVideo" ref="liveVideo"
-              :src="video"
-              frameborder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowfullscreen>
-          </iframe>
+            <YoutubeVue3 ref="youtube" :videoid="video" :width="width" :height="height" @ended="onEnded" @paused="onPaused" @played="onPlayed"/>
+          <div class="dontTouch"></div>
         </div>
       </div>
     </div>
   </div>
   <div class="btn-group d-flex">
-    <div v-if="isShow" class="bg-color d-flex align-items-center" @click="arrowBtn">
+    <div id="B--return-arrow-function" v-if="$store.state.isShow" class="bg-color d-flex align-items-center pointer" @click="arrowBtn">
       <div class="arrowBtn mx-auto d-flex justify-content-center align-items-center">
         <a href="#" class="text-decoration-none text-white">
           <i class="fas fa-chevron-left"></i>
         </a>
       </div>
     </div>
-    <button class="kaohsiung border-0 text-white" @click="goTo_Kaohsiung('高雄展區')" :class="{ 'click-active' :isKaohsiung , 'active-width': $store.state.storesData.isShow}">高雄展區</button>
-    <button class="omo border-0 text-white" @click="goTo_OMO('OMO展區')" :class="{ 'click-active' :isOMO , 'active-width': $store.state.storesData.isShow}">OMO展區</button>
-    <button class="taipei border-0 text-white" @click="goTo_Taipei('台北展區')" :class="{ 'click-active' :isTaipei , 'active-width': $store.state.storesData.isShow}">台北展區</button>
+    <button class="kaohsiung kaohsiung-exhibition-btn border-0 text-white" @click="goTo_Kaohsiung('高雄展區')" :class="{ 'click-active' :isKaohsiung , 'active-width': $store.state.isShow}">高雄展區</button>
+    <button class="omo omo-exhibition-btn border-0 text-white" @click="goTo_OMO('OMO展區')" :class="{ 'click-active' :isOMO , 'active-width': $store.state.isShow}">OMO展區</button>
+    <button class="taipei taipei-exhibition-btn border-0 text-white" @click="goTo_Taipei('台北展區')" :class="{ 'click-active' :isTaipei , 'active-width': $store.state.isShow}">台北展區</button>
   </div>
+  <First v-if="changePage" />
 </div>
 <router-view></router-view>
 </template>
 
 <script>
 import { connectSocket } from '@/webSocket/websocket'
+import First from '@/components/First.vue'
+import YoutubeVue3 from '@/components/YoutubeVue3.vue'
 export default {
+  components: {
+    First,
+    YoutubeVue3
+  },
   data () {
     return {
-      isShow: false,
       isKaohsiung: false,
       isOMO: false,
       isTaipei: false,
       showImage: false,
+      changePage: true,
+      isMute: true,
+      isLoading: true,
       types: [],
       typeValue: ''
     }
   },
+  props: {
+    width: {
+      type: String,
+      default: '100%'
+    },
+    height: {
+      type: String,
+      default: '100%'
+    }
+  },
   watch: {
     image () {
-      this.showImage = true
+      if (this.image) {
+        this.showImage = true
+        this.isLoading = false
+        // console.log('watch, image', this.image, this.showImage)
+      }
     },
     video () {
-      this.showImage = false
+      if (this.video) {
+        this.showImage = false
+        this.isLoading = false
+        // console.log('watch,video', this.youtubeSrc, !this.showImage)
+      }
     }
   },
   computed: {
@@ -67,68 +92,103 @@ export default {
   methods: {
     goTo_Kaohsiung (district, page = 1) {
       console.warn('goTo_Kaohsiung', district)
+      this.$store.dispatch('showBtn', true)
       this.$store.dispatch('storesData/getDistrict', district)
       this.types.forEach(item => {
         if (item === district) {
-          this.$router.push({ path: '/content/merchants', query: { uuid: this.$route.query.uuid, district: item, category: 'total' } })
+          this.$router.push({ path: '/content/manufacturer', query: { uuid: this.$route.query.uuid, district: item, category: 'total' } })
           this.$store.dispatch('storesData/getAllShops', { district: district, category: '', page: page })
           this.isKaohsiung = true
           this.isTaipei = false
           this.isOMO = false
+          this.changePage = false
         }
       })
     },
     goTo_OMO (district, page = 1) {
       this.$store.dispatch('storesData/getDistrict', district)
+      this.$store.dispatch('showBtn', true)
       this.types.forEach(item => {
         if (item === district) {
-          this.$router.push({ path: '/content/merchants', query: { uuid: this.$route.query.uuid, district: item, category: 'total' } })
+          this.$router.push({ path: '/content/manufacturer', query: { uuid: this.$route.query.uuid, district: item, category: 'total' } })
           this.$store.dispatch('storesData/getAllShops', { district: district, category: '', page: page })
           this.isKaohsiung = false
           this.isTaipei = false
           this.isOMO = true
+          this.changePage = false
         }
       })
     },
     goTo_Taipei (district, page = 1) {
       this.$store.dispatch('storesData/getDistrict', district)
+      this.$store.dispatch('showBtn', true)
       this.types.forEach(item => {
         if (item === district) {
-          this.$router.push({ path: '/content/merchants', query: { uuid: this.$route.query.uuid, district: item, category: 'total' } })
+          this.$router.push({ path: '/content/manufacturer', query: { uuid: this.$route.query.uuid, district: item, category: 'total' } })
           this.$store.dispatch('storesData/getAllShops', { district: district, category: '', page: page })
           this.isKaohsiung = false
           this.isOMO = false
           this.isTaipei = true
+          this.changePage = false
         }
       })
     },
     getPageID () {
       this.$http.get(`${process.env.VUE_APP_URL}/template/${process.env.VUE_APP_UUID}`)
         .then(res => {
-          // console.log(res)
           connectSocket(res.data.uuid)
           this.$store.dispatch('storesData/getCategories').then(res => {
-            console.log(res)
+            // console.log(res)
             this.types = res.type
-            this.goTo_Kaohsiung('高雄展區')
+            this.$router.push({ path: '/content', query: { uuid: this.$route.query.uuid } })
           })
         })
     },
     arrowBtn () {
-      if (this.$route.path === '/content/merchantDetail') {
-        this.isShow = true
+      if (this.$route.path === '/content/manufacturerDetail') {
+        this.$router.push(history.state.back)
+        this.$store.dispatch('showBtn', false)
+        // console.log(history.state)
+      } else if (this.$route.path === '/content/manufacturer') {
+        this.$router.push({ path: '/content', query: { uuid: this.$route.query.uuid } })
+        this.changePage = true
+        this.isKaohsiung = false
+        this.isOMO = false
+        this.isTaipei = false
+        this.$store.dispatch('showBtn', false)
+      } else if (this.$route.path === '/content/manufacturerOexpo') {
+        this.$router.go(-1)
+        this.$store.dispatch('showBtn', true)
+        // console.log(history.state)
+      }
+    },
+    onPlayed () {
+      console.log('## OnPlayed')
+    },
+    onEnded () {
+      console.log('## OnEnded')
+      this.$refs.youtube.player.seekTo(0)
+    },
+    onPaused () {
+      console.log('## OnPaused')
+    },
+    mute () {
+      if (this.isMute) {
+        this.isMute = false
+        this.$refs.youtube.player.unMute()
+        this.$swal({ icon: 'success', title: '音訊開啟' })
       } else {
-        console.log(this.$route)
+        this.isMute = true
+        this.$refs.youtube.player.mute()
+        this.$swal({ icon: 'warning', title: '音訊關閉' })
       }
     }
   },
   mounted () {
+    console.log(1)
     this.getPageID()
-    // this.$store.dispatch('storesData/getCategories').then(res => {
-    //   console.log(res)
-    //   this.types = res.type
-    //   this.getPageID()
-    // })
+    this.$store.dispatch('showBtn', false)
+    this.$refs.youtube.player.mute()
   }
 }
 </script>
@@ -136,10 +196,6 @@ export default {
 <style lang="scss" scoped>
 *{
   position: relative;
-}
-.wrap{
-  display: flex;
-  flex-direction: column;
 }
 .bg-cover{
   background-size: cover;
@@ -150,20 +206,36 @@ export default {
   height: 33.59vh;
   background-color: #000;
     .video-part{
-      border: 5px solid #fff;
       position: absolute;
-      top: 14%;
-      left: 11.5%;
-      height: 891px;
-      width: 1671px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      height: 1080px;
+      width: 1920px;
       @media(max-width:1080px){
-        height: 445.5px;
-        width: 835.5px;
+        height: 540px;
+        width: 960px;
       }
     .media{
       display: block;
       height: 100%;
       width: 100%;
+    }
+      .dontTouch{
+        width: 100%;
+        opacity: 0;
+        background-color: orange;
+        position: absolute;
+        z-index: 2;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        height: 100%;
+        &.changeStyle{
+        transition: all .5s;
+        height: 19.7vh;
+        width: 62.5%;
+      }
     }
   }
 }
@@ -173,7 +245,8 @@ export default {
     button {
       width: 33.3%;
       font-size: 72px;
-      background: linear-gradient(180deg, #69DCEC 0%, #019FA9 51.56%, #69DCEC 100%);
+      box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+      background: linear-gradient(180deg, #69DCEC 0%, #019FA9 100%);
       @media(max-width:1080px) {
           font-size: 48px;
       }
@@ -211,5 +284,23 @@ export default {
       }
     }
 }
-
+.muteBtn{
+  // border: 2px solid #fff;
+  height: 54px;
+}
+.loading{
+    width: 160px;
+    height: 160px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    @media(max-width:1080px) {
+      width: 80px;
+      height: 80px;
+    }
+}
+.pointer{
+  cursor: pointer;
+}
 </style>

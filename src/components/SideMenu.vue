@@ -3,20 +3,18 @@
         <div class="side-menu-content">
             <button
                 type="button"
-                class="side-menu-text text-white text-center py-2 rounded-0 border-0 w-100"
+                class="side-menu-text sideMenu-content text-center py-3 rounded-0 w-100"
                 @click="totalCategories(store)"
                 :class="{'bg-secondary':$route.query.category === 'total'}">
-                <span :class="{'text-dark': $route.query.category === 'total'}">全部商家</span>
-                <span :class="{'triangle': $route.query.category === 'total'}"></span>
+                <span :class="{'text-white': $route.query.category === 'total'}">全部展區</span>
             </button>
             <button
                 type="button"
-                class="side-menu-text text-center text-white py-2 rounded-0 border-0 w-100"
+                class="side-menu-text sideMenu-content text-center py-3 rounded-0 w-100"
                 v-for="(category, index) in getCategoryArray" :key="index"
                 @click="chooseCategory(category)"
                 :class="{'bg-secondary': category === $route.query.category}">
-                <span :class="{'text-dark': category === $route.query.category}">{{ category }}</span>
-                <span :class="{'triangle': category === $route.query.category}"></span>
+                <span :class="{'text-white': category === $route.query.category}">{{ category }}</span>
             </button>
             <!-- <div class="side-menu-text text-center text-white py-3" @click="chooseCategory(category)">{{ category }}</div> -->
         </div>
@@ -53,17 +51,17 @@ export default {
       this.$store.dispatch('storesData/getAllShops', { district: this.TypeValue, category: '', page: page })
       this.merchantsValue = 'total'
       if (!item) {
-        console.log('!item')
-        this.$router.push({ path: '/content/merchants', query: { uuid: this.$route.query.uuid, district: this.TypeValue, category: 'total' } })
+        // console.log('!item')
+        this.$router.push({ path: '/content/manufacturer', query: { uuid: this.$route.query.uuid, district: this.TypeValue, category: 'total' } })
         // this.$store.dispatch('storesData/getAllShops')
       }
     },
     chooseCategory (item, page = 1) {
-      console.log(item)
+      // console.log(item)
       this.$store.dispatch('storesData/getValue', item)
       this.$store.dispatch('storesData/getAllShops', { district: this.TypeValue, category: item, page: page })
       this.merchantsValue = this.getMerchantValue
-      this.$router.push({ path: '/content/merchants', query: { uuid: this.$route.query.uuid, district: this.TypeValue, category: `${item}` } })
+      this.$router.push({ path: '/content/manufacturer', query: { uuid: this.$route.query.uuid, district: this.TypeValue, category: `${item}` } })
       // this.$store.dispatch('storesData/districtType', category)
     }
   },
@@ -74,32 +72,27 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-*{
-  position: relative;
-  font-family: Roboto;
-}
+// *{
+//   position: relative;
+//   font-family: Roboto;
+// }
 .side-menu{
     background-color:#016A72;
     width: 23.6%;
     height: 62.5vh;
-    .side-menu-text{
-        background-color: transparent;
-        font-size: 64px;
-        @media(max-width: 1080px) {
-            font-size: 36px;
-        }
-    }
-    .triangle {
-        position: absolute;
-        top:50%;
-        right:0;
-        transform: translateY(-50%);
-        border: 36px solid;
-        border-color: transparent #003539 transparent transparent;
-        @media (max-width: 1080px) {
-            border: 22px solid;
-            border-color: transparent #003539 transparent transparent;
-        }
+    .side-menu-content {
+      .side-menu-text{
+        background-color: #005960;
+          color: #58CEDC;
+          border-top: 0;
+          border-left: 0;
+          border-right: 0;
+          border-bottom: 10px solid #016A72;
+          font-size: 64px;
+          @media(max-width: 1080px) {
+              font-size: 32px;
+          }
+      }
     }
 }
 

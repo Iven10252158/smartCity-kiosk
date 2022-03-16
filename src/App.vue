@@ -1,5 +1,5 @@
 <template>
-  <div class="all" draggable="false">
+  <div class="all" ondragstart="return false">
     <router-view/>
   </div>
 </template>

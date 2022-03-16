@@ -7,49 +7,47 @@ const state = {
   typeValue: '',
   stores: [],
   pagination: [],
-  isShow: false
+  isShow: false,
+  page: 1
 }
 
 const mutations = {
   getAllShops (state, payload) {
     state.pagination = payload.slice(0, 1)
     state.stores = payload.slice(1)
-    console.log('payload', state.pagination)
+    state.page = state.pagination[0].page
+    // console.log('payload', state.page)
   },
   getCategoryShop (state, payload) {
-    console.log(payload)
+    // console.log(payload)
   },
   getCategories (state, payload) {
     state.categories = payload.region
     state.types = payload.type
-    console.log('state.categories', state.categories)
+    // console.log('state.categories', state.categories)
   },
   getTypeValue (state, district) {
     state.typeValue = district
-    console.log(state.typeValue)
-  },
-  controlArrowBtn (state) {
-    state.isShow = !state.isShow
-    console.log('state.isShow', state.isShow)
+    // console.log(state.typeValue)
   },
   getValue (state, category) {
     state.merchantValue = category
-    console.log('category', category)
+    // console.log('category', category)
   }
 }
 
 const actions = {
   async getAllShops ({ commit }, data) {
-    console.log('data', data)
+    // console.log('data', data)
     try {
       if (data.district && data.category) {
         const res = await axios.get(`${process.env.VUE_APP_URL}/smartcity/?type=${data.district}&region=${data.category}&offset=12&page=${data.page}`)
-        console.log('try1', res)
+        // console.log('try1', res)
         commit('getAllShops', res.data)
         return res.data
       } else {
         const res = await axios.get(`${process.env.VUE_APP_URL}/smartcity/?type=${data.district}&offset=12&page=${data.page}`)
-        console.log('try2', data, res)
+        // console.log('try2', data, res)
         commit('getAllShops', res.data)
         return res.data
       }
@@ -60,13 +58,13 @@ const actions = {
   getCategories ({ commit }) {
     return axios.get(`${process.env.VUE_APP_URL}/smartcity/items`)
       .then(res => {
-        console.log('getCategories', res)
+        // console.log('getCategories', res)
         commit('getCategories', res.data)
         return res.data
       })
   },
   getDistrict ({ commit }, district) {
-    console.log(district)
+    // console.log(district)
     commit('getTypeValue', district)
   },
   getValue ({ commit }, category) {
@@ -93,8 +91,8 @@ const getters = {
   typeValue (state) {
     return state.typeValue
   },
-  isShow (state) {
-    return state.isShow
+  page (state) {
+    return state.page
   }
 }
 
