@@ -4,9 +4,13 @@
   </div>
 </template>
 
+<script>
+
+</script>
+
 <style lang="scss">
+    @import '@/assets/all';
   .all{
     user-select: none;
   }
-  @import '@/assets/all';
 </style>

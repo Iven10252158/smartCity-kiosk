@@ -50,6 +50,7 @@ export default {
     iframe {
         width: 100%;
         height: 40vh;
+        // pointer-events: none;
     }
     .mask {
         width: 100%;

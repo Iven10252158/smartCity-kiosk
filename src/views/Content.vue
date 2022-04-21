@@ -14,7 +14,7 @@
     </div>
   </div>
   <div class="btn-group d-flex">
-    <div id="B--return-arrow-function" v-if="$store.state.isShow" class="bg-color d-flex align-items-center pointer" @click="arrowBtn">
+    <div id="B--return-arrow-function" v-if="$store.state.isShow" class="return-arrow-function bg-color d-flex align-items-center pointer" @click="arrowBtn">
       <div class="arrowBtn mx-auto d-flex justify-content-center align-items-center">
         <a href="#" class="text-decoration-none text-white">
           <i class="fas fa-chevron-left"></i>

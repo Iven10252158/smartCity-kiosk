@@ -1,7 +1,7 @@
 import store from '../store'
 
 let socket = null
-// let socket1 = null
+let socketTouch = null
 
 export const connectSocket = (id) => {
   const WS_BASE = `${process.env.VUE_APP_WS_BASE}` // 192.168.1.176:8080/ws/'
@@ -25,20 +25,20 @@ export const connectSocket = (id) => {
   }
 }
 
-// export const connectSocket1 = () => {
-//   socket1 = new WebSocket('ws://192.168.1.41:5678/')
-//   socket1.onopen = () => { // 連線(onopen)
-//     // store.dispatch('ws/onOpen')
-//     if (socket1.readyState === 1) {
-//       console.log('websocket connected!!')
-//     // socket.send(JSON.stringify({ command: `get_status ${id}` }))
-//     }
-//   }
-//   socket1.onmessage = (msg) => { // 監聽訊息(onmessage)
-//     // store.dispatch('ws/handWsRes', JSON.parse(msg.data))
-//     console.log('onmessage:', msg.data)
-//   }
-//   socket1.onerror = (err) => { // 監聽錯誤(onerror)
-//     console.log('error', err)
-//   }
-// }
+export const connectSocketTouch = () => {
+  socketTouch = new WebSocket('ws://192.168.1.151:5678/ws/') // 192.168.1.151:5678
+  socketTouch.onopen = () => { // 連線(onopen)
+    store.dispatch('cursorState/onOpen')
+    if (socketTouch.readyState === 1) {
+      console.log('connectSocketTouch connected!!')
+    // socket.send(JSON.stringify({ command: `get_status ${id}` }))
+    }
+  }
+  socketTouch.onmessage = (msg) => { // 監聽訊息(onmessage)
+    store.dispatch('cursorState/handWsRes', JSON.parse(msg.data))
+    console.log('onmessage:', JSON.parse(msg.data))
+  }
+  socketTouch.onerror = (err) => { // 監聽錯誤(onerror)
+    console.log('error', err)
+  }
+}

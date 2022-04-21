@@ -16,7 +16,8 @@ const mutations = {
     state.pagination = payload.slice(0, 1)
     state.stores = payload.slice(1)
     state.page = state.pagination[0].page
-    // console.log('payload', state.page)
+    console.log(state.stores)
+    console.log(state.pagination)
   },
   getCategoryShop (state, payload) {
     // console.log(payload)

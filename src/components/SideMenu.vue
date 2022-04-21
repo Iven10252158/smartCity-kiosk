@@ -14,20 +14,27 @@
                 v-for="(category, index) in getCategoryArray" :key="index"
                 @click="chooseCategory(category)"
                 :class="{'bg-secondary': category === $route.query.category}">
-                <span :class="{'text-white': category === $route.query.category}">{{ category }}</span>
+                <!-- <span  :class="{'text-white': category === $route.query.category}">{{ category }}</span> -->
+                <template v-if="category.includes('(')">
+                  <div :class="{'text-white': category === $route.query.category}">{{ category.split('(')[0] }}</div>
+                  <div :class="{'text-white': category === $route.query.category}">({{ category.split('(')[1] }}</div>
+                </template>
+                <template v-else>
+                  <span :class="{'text-white': category === $route.query.category}">{{ category }}</span>
+                </template>
             </button>
-            <!-- <div class="side-menu-text text-center text-white py-3" @click="chooseCategory(category)">{{ category }}</div> -->
         </div>
     </div>
-</template>
 
+</template>
 <script>
 
 export default {
   data () {
     return {
       merchantsValue: '',
-      totalShops: []
+      totalShops: [],
+      stringAry: []
     }
   },
   computed: {
@@ -62,7 +69,6 @@ export default {
       this.$store.dispatch('storesData/getAllShops', { district: this.TypeValue, category: item, page: page })
       this.merchantsValue = this.getMerchantValue
       this.$router.push({ path: '/content/manufacturer', query: { uuid: this.$route.query.uuid, district: this.TypeValue, category: `${item}` } })
-      // this.$store.dispatch('storesData/districtType', category)
     }
   },
   mounted () {

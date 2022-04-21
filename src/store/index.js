@@ -1,6 +1,7 @@
 import { createStore } from 'vuex'
 import storesData from './storesData'
 import ws from './ws'
+import cursorState from './cursorState'
 export default createStore({
   state: {
     isShow: false
@@ -18,6 +19,7 @@ export default createStore({
   getters: {},
   modules: {
     storesData,
-    ws
+    ws,
+    cursorState
   }
 })
